@@ -178,7 +178,7 @@
         <openmrsPlatformVersion>2.4.2</openmrsPlatformVersion>
         <powerMockVersion>2.0.7</powerMockVersion>
         <mockitoVersion>3.5.11</mockitoVersion>
-        <junitVersion>4.13</junitVersion>
+        <junitVersion>4.13.1</junitVersion>
         <webServices.version>2.33.0</webServices.version>
         <jacocoVersion>0.7.9</jacocoVersion>
     </properties>
