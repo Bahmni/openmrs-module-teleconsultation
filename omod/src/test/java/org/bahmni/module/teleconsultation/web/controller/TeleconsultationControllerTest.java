@@ -1,16 +1,17 @@
 package org.bahmni.module.teleconsultation.web.controller;
 
 import org.bahmni.module.teleconsultation.api.TeleconsultationService;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.springframework.http.ResponseEntity;
 
-import static org.mockito.Matchers.eq;
+import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
-import static org.mockito.MockitoAnnotations.initMocks;
+import static org.mockito.MockitoAnnotations.openMocks;
 
 public class TeleconsultationControllerTest {
 	
@@ -20,9 +21,16 @@ public class TeleconsultationControllerTest {
 	@InjectMocks
 	private TeleconsultationController teleconsultationController;
 	
-	@Before
+	private AutoCloseable mocks;
+	
+	@BeforeEach
 	public void setUp() throws Exception {
-		initMocks(this);
+		mocks = openMocks(this);
+	}
+	
+	@AfterEach
+	public void tearDown() throws Exception {
+		mocks.close();
 	}
 	
 	@Test

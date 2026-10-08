@@ -1,28 +1,22 @@
 package org.bahmni.module.teleconsultation.api;
 
 import org.bahmni.module.teleconsultation.api.impl.TeleconsultationServiceImpl;
-import org.junit.Before;
-import org.junit.Test;
-import org.junit.runner.RunWith;
-import org.junit.runners.Parameterized;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
+import org.mockito.MockedStatic;
+import org.mockito.Mockito;
 import org.mockito.MockitoAnnotations;
 import org.openmrs.api.AdministrationService;
 import org.openmrs.api.context.Context;
-import org.powermock.api.mockito.PowerMockito;
-import org.powermock.core.classloader.annotations.PowerMockIgnore;
-import org.powermock.core.classloader.annotations.PrepareForTest;
-import org.powermock.modules.junit4.PowerMockRunner;
 
 import java.util.UUID;
 
-import static org.junit.Assert.assertEquals;
-import static org.powermock.api.mockito.PowerMockito.when;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.mockito.Mockito.when;
 
-@PowerMockIgnore("javax.management.*")
-@RunWith(PowerMockRunner.class)
-@PrepareForTest({ Context.class })
 public class TeleconsultationServiceImplTest {
 
     @Mock
@@ -31,11 +25,21 @@ public class TeleconsultationServiceImplTest {
     @InjectMocks
     TeleconsultationServiceImpl teleconsultationService;
 
-    @Before
+    private AutoCloseable mocks;
+
+    private MockedStatic<Context> contextMock;
+
+    @BeforeEach
     public void init() {
-        MockitoAnnotations.initMocks(this);
-        PowerMockito.mockStatic(Context.class);
-        when(Context.getAdministrationService()).thenReturn(administrationService);
+        mocks = MockitoAnnotations.openMocks(this);
+        contextMock = Mockito.mockStatic(Context.class);
+        contextMock.when(Context::getAdministrationService).thenReturn(administrationService);
+    }
+
+    @AfterEach
+    public void tearDown() throws Exception {
+        contextMock.close();
+        mocks.close();
     }
 
     @Test

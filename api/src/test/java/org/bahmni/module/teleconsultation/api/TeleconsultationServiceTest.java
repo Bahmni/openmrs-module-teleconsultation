@@ -1,30 +1,26 @@
 package org.bahmni.module.teleconsultation.api;
 
-import org.junit.Before;
-import org.junit.Test;
-import org.junit.runner.RunWith;
-import org.openmrs.api.APIAuthenticationException;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import org.openmrs.api.context.Context;
-import org.openmrs.web.test.BaseModuleWebContextSensitiveTest;
-import org.powermock.core.classloader.annotations.PrepareForTest;
+import org.openmrs.web.test.jupiter.BaseModuleWebContextSensitiveTest;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
+import org.springframework.security.access.AccessDeniedException;
 
 import java.util.UUID;
 
-import static org.junit.Assert.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 
 
-@RunWith(SpringJUnit4ClassRunner.class)
 @org.springframework.test.context.ContextConfiguration(locations = {
 		"classpath:TestingApplicationContext.xml" }, inheritLocations = true)
-@PrepareForTest({Context.class})
 public class TeleconsultationServiceTest extends BaseModuleWebContextSensitiveTest {
 
 	@Autowired
 	TeleconsultationService teleconsultationService;
 
-	@Before
+	@BeforeEach
 	public void init() {
 		executeDataSet("userRolesAndPrivileges.xml");
 	}
@@ -34,13 +30,13 @@ public class TeleconsultationServiceTest extends BaseModuleWebContextSensitiveTe
 		Context.authenticate("userWithPrivilege", "P@ssw0rd");
 		UUID uuid = UUID.randomUUID();
 		String link = teleconsultationService.generateTeleconsultationLink(uuid.toString());
-		assertNotNull("https://meet.jit.si/" + uuid, link);
+		assertNotNull(link, "https://meet.jit.si/" + uuid);
 	}
 
-	@Test(expected = APIAuthenticationException.class)
+	@Test
 	public void shouldThrowAuthenticationExceptionIfUserDoesNotHaveSufficientPrivileges() {
 		Context.authenticate("userWithoutPrivilege", "P@ssw0rd");
 		TeleconsultationService service = Context.getService(TeleconsultationService.class);
-		service.generateTeleconsultationLink("uuid");
+		assertThrows(AccessDeniedException.class, () -> service.generateTeleconsultationLink("uuid"));
 	}
 }

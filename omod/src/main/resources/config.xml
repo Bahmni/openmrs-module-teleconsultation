@@ -11,7 +11,7 @@
 
 	<activator>org.bahmni.module.teleconsultation.TeleconsultationActivator</activator>
 
-	<require_version>${openmrsPlatformVersion}</require_version>
+	<require_version>3.0.0</require_version>
 
 	<require_modules>
 		<require_module>org.openmrs.module.webservices.rest</require_module>
