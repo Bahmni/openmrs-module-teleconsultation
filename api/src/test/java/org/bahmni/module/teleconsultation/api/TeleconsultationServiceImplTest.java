@@ -7,6 +7,7 @@ import org.junit.runner.RunWith;
 import org.junit.runners.Parameterized;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
+import org.mockito.Mockito;
 import org.mockito.MockitoAnnotations;
 import org.openmrs.api.AdministrationService;
 import org.openmrs.api.context.Context;
@@ -60,8 +61,16 @@ public class TeleconsultationServiceImplTest {
 
     @Test
     public void shouldAddAndRemoveGetGlobalPropertiesProxyPrivilegeAroundGlobalPropertyRead() {
-        when(administrationService.getGlobalProperty("bahmni.appointment.teleConsultation.serverUrlPattern")).thenReturn(
-                "https://test.server/{0}");
+        when(administrationService.getGlobalProperty("bahmni.appointment.teleConsultation.serverUrlPattern")).thenAnswer(
+                invocation -> {
+                    // verifyStatic only checks invocation counts, not order. Verifying from inside the stub
+                    // proves the privilege is held before the read happens, and not released yet.
+                    PowerMockito.verifyStatic(Context.class);
+                    Context.addProxyPrivilege(PrivilegeConstants.GET_GLOBAL_PROPERTIES);
+                    PowerMockito.verifyStatic(Context.class, Mockito.never());
+                    Context.removeProxyPrivilege(PrivilegeConstants.GET_GLOBAL_PROPERTIES);
+                    return "https://test.server/{0}";
+                });
         teleconsultationService.generateTeleconsultationLink(UUID.randomUUID().toString());
 
         PowerMockito.verifyStatic(Context.class);
